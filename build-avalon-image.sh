@@ -49,6 +49,7 @@ zedboard_brdcfg=("zynq" "config.${AVA_MACHINE}.zedboard")
 zctrl_brdcfg=("zynq" "config.${AVA_MACHINE}.zctrl")
 xc7z100_brdcfg=("zynq" "config.7z100")
 h2plus_brdcfg=("sunxi/cortexa7" "config.${AVA_MACHINE}.h2plus")
+h3_brdcfg=("sunxi/cortexa7" "config.${AVA_MACHINE}.h3")
 
 which wget > /dev/null && DL_PROG=wget && DL_PARA="-nv -O"
 which curl > /dev/null && DL_PROG=curl && DL_PARA="-L -o"
@@ -228,8 +229,8 @@ Usage: $0 [--version] [--help] [--build] [--cgminer] [--cleanup]
      AVA_TARGET_BOARD   Environment variable, available target:
                         rpi3-modelb, rpi2-modelb
                         rpi1-modelb, tl-mr3020-v1
-                        zctrl, xc7z100, h2plus
-                        use h2plus if unset
+                        zctrl, xc7z100, h2plus, h3
+                        use h3 if unset
 
      AVA_MACHINE        Environment variable, available machine:
                         avalon8, avalon7, avalon6, avalon4
