@@ -14,7 +14,7 @@
 # Learn bash: http://explainshell.com/
 set -e
 
-SCRIPT_VERSION=20180223
+SCRIPT_VERSION=20180320
 
 # Support machine: avalon6, avalon4, abc, avalon7, avalon8
 [ -z "${AVA_MACHINE}" ] && AVA_MACHINE=avalon8
@@ -31,6 +31,9 @@ avalon6_owrepo="git://git.openwrt.org/openwrt.git@cac971da"
 abc_owrepo="git://git.openwrt.org/openwrt.git"
 avalon7_owrepo="git://github.com/openwrt/openwrt.git"
 avalon8_owrepo="git://github.com/openwrt/openwrt.git"
+
+# DEFINE pool
+[ -z "${AVA_POOL}" ] && AVA_POOL=default
 
 # OpenWrt feeds, features: NULL(Default), NiceHash, DHCP, bitcoind
 [ -z "${FEATURE}" ] && FEEDS_CONF_URL=https://raw.github.com/Canaan-Creative/cgminer-openwrt-packages/master/cgminer/data/feeds.${AVA_MACHINE}.conf
@@ -79,7 +82,7 @@ prepare_version() {
     OW_GIT_VERSION=`git --git-dir=./feeds/cgminer/.git rev-parse HEAD | cut -c1-7`
 
     cat > ./files/etc/avalon_version << EOL
-Avalon Firmware - $DATE
+$AVA_MACHINE - $DATE
     luci: $LUCI_GIT_VERSION
     cgminer: $GIT_VERSION
     cgminer-packages: $OW_GIT_VERSION
@@ -131,6 +134,13 @@ prepare_patch() {
         wget https://raw.githubusercontent.com/${PATCH_REPO}/Avalon-extras/master/7z100-miscs/patches/linux/zynq/patches/121-add-dts-for-7z100.patch -O ./target/linux/zynq/patches/121-add-dts-for-7z100.patch
         wget https://raw.githubusercontent.com/${PATCH_REPO}/Avalon-extras/master/7z100-miscs/patches/linux/zynq/profiles/7z100.mk -O ./target/linux/zynq/profiles/7z100.mk
     fi
+    
+    if [ "${AVA_TARGET_BOARD}" == "h2plus" ]; then
+    # Patch Linux
+        unalias cp
+        cp ../../060-ARM-dts-sun8i-add-support-for-Orange-Pi-R1.patch ./target/linux/sunxi/patches-4.14
+        alias cp='cp -i'
+    fi
 }
 
 prepare_feeds() {
@@ -142,6 +152,29 @@ prepare_feeds() {
     if [ ! -e files ]; then
         ln -s feeds/cgminer/cgminer/root-files files
     fi
+    
+    alias cp='cp -i'
+    unalias cp
+    cp ../../config.avalon7.h2plus feeds/cgminer/cgminer/data
+    cp ../../config.avalon7.h3 feeds/cgminer/cgminer/data
+    cp ../../config.avalon7.rpi3 feeds/cgminer/cgminer/data
+    cp ../../config.avalon8.h2plus feeds/cgminer/cgminer/data
+    cp ../../config.avalon8.h3 feeds/cgminer/cgminer/data
+    cp ../../config.avalon8.rpi3 feeds/cgminer/cgminer/data
+
+    if [ "${AVA_POOL}" == "other" ]; then
+        cp ../../cgminer.avalon7.config feeds/cgminer/cgminer/files
+        cp ../../cgminer.avalon8.config feeds/cgminer/cgminer/files
+    fi
+
+    if [ "${AVA_TARGET_BOARD}" == "h3" ]; then
+        cp ../../network.single feeds/cgminer/cgminer/root-files/etc/config/network
+    fi
+
+    if [ "${AVA_TARGET_BOARD}" == "h2plus" ]; then
+        cp ../../network.dual feeds/cgminer/cgminer/root-files/etc/config/network
+    fi 
+    alias cp='cp -i'
 }
 
 prepare_source() {
@@ -185,6 +218,7 @@ build_image() {
     cd ${OPENWRT_DIR}
     yes "" | make oldconfig > /dev/null
     # clean before build
+    #make -j${CORE_NUM} V=s
     make -j${CORE_NUM} clean world
 }
 
@@ -231,7 +265,7 @@ Usage: $0 [--version] [--help] [--build] [--cgminer] [--cleanup]
                         rpi1-modelb, tl-mr3020-v1
                         zctrl, xc7z100, h2plus, h3
                         use h3 if unset
-
+     AVA_POLL           Environment variable, Set other use current dir
      AVA_MACHINE        Environment variable, available machine:
                         avalon8, avalon7, avalon6, avalon4
                         use avalon8 if unset
