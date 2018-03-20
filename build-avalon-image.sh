@@ -20,7 +20,7 @@ SCRIPT_VERSION=20180223
 [ -z "${AVA_MACHINE}" ] && AVA_MACHINE=avalon8
 
 # Support target board: rpi3-modelb, rpi2-modelb, rpi1-modelb, tl-wr703n-v1, tl-mr3020-v1, wrt1200ac, zedboard, h2plus, zctrl, xc7z100
-[ -z "${AVA_TARGET_BOARD}" ] && AVA_TARGET_BOARD=h2plus
+[ -z "${AVA_TARGET_BOARD}" ] && AVA_TARGET_BOARD=h3
 
 # Patch repo
 [ -z "${PATCH_REPO}" ] && PATCH_REPO=Canaan-Creative
