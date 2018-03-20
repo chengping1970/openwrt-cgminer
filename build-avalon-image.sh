@@ -163,16 +163,15 @@ prepare_feeds() {
     cp ../../config.avalon8.rpi3 feeds/cgminer/cgminer/data
 
     if [ "${AVA_POOL}" == "other" ]; then
-        cp ../../cgminer.avalon7.config feeds/cgminer/cgminer/files
-        cp ../../cgminer.avalon8.config feeds/cgminer/cgminer/files
-    fi
-
-    if [ "${AVA_TARGET_BOARD}" == "h3" ]; then
-        cp ../../network.single feeds/cgminer/cgminer/root-files/etc/config/network
+        cp ../../cgminer.config feeds/cgminer/cgminer/files/cgminer.${AVA_MACHINE}.config
     fi
 
     if [ "${AVA_TARGET_BOARD}" == "h2plus" ]; then
         cp ../../network.dual feeds/cgminer/cgminer/root-files/etc/config/network
+        cp ../../dhcp.dual feeds/cgminer/cgminer/root-files/etc/config/dhcp
+    else
+        cp ../../network.single feeds/cgminer/cgminer/root-files/etc/config/network
+        cp ../../dhcp.single feeds/cgminer/cgminer/root-files/etc/config/dhcp
     fi 
     alias cp='cp -i'
 }
@@ -265,10 +264,15 @@ Usage: $0 [--version] [--help] [--build] [--cgminer] [--cleanup]
                         rpi1-modelb, tl-mr3020-v1
                         zctrl, xc7z100, h2plus, h3
                         use h3 if unset
-     AVA_POLL           Environment variable, Set other use current dir
+     AVA_POLL           Environment variable, available pool:
+                        default, other
+                        use default if unset, Set other use cgminer.config
      AVA_MACHINE        Environment variable, available machine:
                         avalon8, avalon7, avalon6, avalon4
                         use avalon8 if unset
+     FEATURE            Environment variable, available feature:
+                        NichHash, DHCP, bitcoind
+                        use blank if unset
 
 Written by: Xiangfu <xiangfu@openmobilefree.net>
             Fengling <Fengling.Qin@gmail.com>
