@@ -36,7 +36,7 @@ avalon8_owrepo="git://github.com/openwrt/openwrt.git"
 [ -z "${AVA_POOL}" ] && AVA_POOL=default
 
 # DEFINE debug
-[ -z "${DEBUG}" ] && DEBUG=off
+[ -z "${DEBUG}" ] && DEBUG=no
 
 # OpenWrt feeds, features: NULL(Default), NiceHash, DHCP, bitcoind
 [ -z "${FEATURE}" ] && FEEDS_CONF_URL=https://raw.github.com/Canaan-Creative/cgminer-openwrt-packages/master/cgminer/data/feeds.${AVA_MACHINE}.conf
@@ -166,7 +166,9 @@ prepare_feeds() {
     cp ../../config.avalon8.rpi3 feeds/cgminer/cgminer/data
 
     if [ "${AVA_POOL}" == "other" ]; then
-        cp ../../cgminer.config feeds/cgminer/cgminer/files/cgminer.${AVA_MACHINE}.config
+        cp ../../cgminer.${AVA_MACHINE}.config feeds/cgminer/cgminer/files/cgminer.${AVA_MACHINE}.config
+    else
+        cp ../../cgminer.${AVA_MACHINE}.default feeds/cgminer/cgminer/files/cgminer.${AVA_MACHINE}.config
     fi
 
     if [ "${AVA_TARGET_BOARD}" == "h2plus" ]; then
@@ -282,7 +284,7 @@ Usage: $0 [--version] [--help] [--build] [--cgminer] [--cleanup]
                         NiceHash, DHCP, bitcoind
                         use blank if unset
      DEBUG              Environment variable, available feature:
-                        on, off, message 
+                        yes, no, message 
                         use off if unset
 
 Written by: Xiangfu <xiangfu@openmobilefree.net>
