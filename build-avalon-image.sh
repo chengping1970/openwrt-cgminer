@@ -35,6 +35,9 @@ avalon8_owrepo="git://github.com/openwrt/openwrt.git"
 # DEFINE pool
 [ -z "${AVA_POOL}" ] && AVA_POOL=default
 
+# DEFINE debug
+[ -z "${DEBUG}" ] && DEBUG=off
+
 # OpenWrt feeds, features: NULL(Default), NiceHash, DHCP, bitcoind
 [ -z "${FEATURE}" ] && FEEDS_CONF_URL=https://raw.github.com/Canaan-Creative/cgminer-openwrt-packages/master/cgminer/data/feeds.${AVA_MACHINE}.conf
 [ "${FEATURE}" == "NiceHash" ] && FEEDS_CONF_URL=https://raw.github.com/Canaan-Creative/cgminer-openwrt-packages/xnsub/cgminer/data/feeds.${AVA_MACHINE}.conf
@@ -217,8 +220,13 @@ build_image() {
     cd ${OPENWRT_DIR}
     yes "" | make oldconfig > /dev/null
     # clean before build
-    #make -j${CORE_NUM} V=s
-    make -j${CORE_NUM} clean world
+    if [ "${DEBUG}" == "yes" ]; then
+        make -j1 V=s
+    elif [ "${DEBUG}" == "message" ]; then
+        make -j${CORE_NUM} V=s
+    else
+        make -j${CORE_NUM} clean world
+    fi
 }
 
 build_cgminer() {
@@ -271,8 +279,11 @@ Usage: $0 [--version] [--help] [--build] [--cgminer] [--cleanup]
                         avalon8, avalon7, avalon6, avalon4
                         use avalon8 if unset
      FEATURE            Environment variable, available feature:
-                        NichHash, DHCP, bitcoind
+                        NiceHash, DHCP, bitcoind
                         use blank if unset
+     DEBUG              Environment variable, available feature:
+                        on, off, message 
+                        use off if unset
 
 Written by: Xiangfu <xiangfu@openmobilefree.net>
             Fengling <Fengling.Qin@gmail.com>
