@@ -272,7 +272,7 @@ Usage: $0 [--version] [--help] [--build] [--cgminer] [--cleanup]
                         rpi1-modelb, tl-mr3020-v1
                         zctrl, xc7z100, h2plus, h3
                         use h3 if unset
-     AVA_POLL           Environment variable, available pool:
+     AVA_POOL           Environment variable, available pool:
                         default, other
                         use default if unset, Set other use cgminer.config
      AVA_MACHINE        Environment variable, available machine:
