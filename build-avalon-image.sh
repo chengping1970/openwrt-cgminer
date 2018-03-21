@@ -29,8 +29,8 @@ SCRIPT_VERSION=20180320
 avalon4_owrepo="svn://svn.openwrt.org/openwrt/trunk@43076"
 avalon6_owrepo="git://git.openwrt.org/openwrt.git@cac971da"
 abc_owrepo="git://git.openwrt.org/openwrt.git"
-avalon7_owrepo="git://github.com/openwrt/openwrt.git"
-avalon8_owrepo="git://github.com/openwrt/openwrt.git"
+avalon7_owrepo="git://github.com/chengping1970/openwrt.git"
+avalon8_owrepo="git://github.com/chengping1970/openwrt.git"
 
 # DEFINE pool
 [ -z "${AVA_POOL}" ] && AVA_POOL=default
@@ -136,13 +136,6 @@ prepare_patch() {
         wget https://raw.githubusercontent.com/${PATCH_REPO}/Avalon-extras/master/7z100-miscs/patches/linux/zynq/image/Makefile -O ./target/linux/zynq/image/Makefile
         wget https://raw.githubusercontent.com/${PATCH_REPO}/Avalon-extras/master/7z100-miscs/patches/linux/zynq/patches/121-add-dts-for-7z100.patch -O ./target/linux/zynq/patches/121-add-dts-for-7z100.patch
         wget https://raw.githubusercontent.com/${PATCH_REPO}/Avalon-extras/master/7z100-miscs/patches/linux/zynq/profiles/7z100.mk -O ./target/linux/zynq/profiles/7z100.mk
-    fi
-    
-    if [ "${AVA_TARGET_BOARD}" == "h2plus" ]; then
-    # Patch Linux
-        unalias cp
-        cp ../../060-ARM-dts-sun8i-add-support-for-Orange-Pi-R1.patch ./target/linux/sunxi/patches-4.14
-        alias cp='cp -i'
     fi
 }
 
