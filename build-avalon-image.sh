@@ -213,8 +213,11 @@ prepare_source() {
 
 build_image() {
     cd ${OPENWRT_DIR}
-    yes "" | make oldconfig > /dev/null
+    yes "" | make oldconfig > /dev/null    
+
     # clean before build
+    make clean
+    
     if [ "${DEBUG}" == "yes" ]; then
         make -j1 V=s
     elif [ "${DEBUG}" == "message" ]; then
