@@ -42,10 +42,10 @@ avalon8_owrepo="git://github.com/chengping1970/openwrt.git"
 [ -z "${DEBUG}" ] && DEBUG=no
 
 #define feature
-[ -z "${FEATURE}" ] && FEATURE=None
+[ -z "${FEATURE}" ] && FEATURE=none
 
 # OpenWrt feeds, features: NULL(Default), NiceHash, DHCP, bitcoind
-[ "${FEATURE}" == "None"] && FEEDS_CONF_URL=https://raw.github.com/Canaan-Creative/cgminer-openwrt-packages/master/cgminer/data/feeds.${AVA_MACHINE}.conf
+[ "${FEATURE}" == "none" ] && FEEDS_CONF_URL=https://raw.github.com/Canaan-Creative/cgminer-openwrt-packages/master/cgminer/data/feeds.${AVA_MACHINE}.conf
 [ "${FEATURE}" == "NiceHash" ] && FEEDS_CONF_URL=https://raw.github.com/Canaan-Creative/cgminer-openwrt-packages/xnsub/cgminer/data/feeds.${AVA_MACHINE}.conf
 [ "${FEATURE}" == "DHCP" ] && FEEDS_CONF_URL=https://raw.github.com/Canaan-Creative/cgminer-openwrt-packages/dhcp/cgminer/data/feeds.${AVA_MACHINE}.conf
 [ "${FEATURE}" == "bitcoind" ] && FEEDS_CONF_URL=https://raw.github.com/Canaan-Creative/cgminer-openwrt-packages/bitcoind/cgminer/data/feeds.${AVA_MACHINE}.conf
@@ -291,8 +291,8 @@ Usage: $0 [--version] [--help] [--build] [--cgminer] [--cleanup]
                         avalon8, avalon7, avalon6, avalon4
                         use avalon8 if unset
      FEATURE            Environment variable, available feature:
-                        NiceHash, DHCP, bitcoind
-                        use blank if unset
+                        none, NiceHash, DHCP, bitcoind
+                        use none if unset
      DEBUG              Environment variable, available feature:
                         yes, no, message 
                         use no if unset
