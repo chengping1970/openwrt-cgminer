@@ -296,6 +296,11 @@ Usage: $0 [--version] [--help] [--build] [--cgminer] [--cleanup]
      DEBUG              Environment variable, available feature:
                         yes, no, message 
                         use no if unset
+Example:
+     for avalon7 
+     AVA_TARGET_BOARD=h3 AVA_POOL=default AVA_NETWORK=default AVA_MACHINE=avalon7 FEATURE=NiceHash DEBUG=message ./build-avalon-image.sh --build
+     for avalon8
+     AVA_TARGET_BOARD=h3 AVA_POOL=other AVA_NETWORK=other AVA_MACHINE=avalon8 FEATURE=none DEBUG=no ./build-avalon-image.sh --build
 
 Written by: Xiangfu <xiangfu@openmobilefree.net>
             Fengling <Fengling.Qin@gmail.com>
