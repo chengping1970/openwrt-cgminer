@@ -14,7 +14,7 @@
 # Learn bash: http://explainshell.com/
 set -e
 
-SCRIPT_VERSION=20180320
+SCRIPT_VERSION=20180324
 
 # Support machine: avalon6, avalon4, abc, avalon7, avalon8
 [ -z "${AVA_MACHINE}" ] && AVA_MACHINE=avalon8
@@ -35,11 +35,17 @@ avalon8_owrepo="git://github.com/chengping1970/openwrt.git"
 # DEFINE pool
 [ -z "${AVA_POOL}" ] && AVA_POOL=default
 
+#defiine network 
+[ -z "${AVA_NETWORK}" ] && AVA_NETWORK=default
+
 # DEFINE debug
 [ -z "${DEBUG}" ] && DEBUG=no
 
+#define feature
+[ -z "${FEATURE}" ] && FEATURE=None
+
 # OpenWrt feeds, features: NULL(Default), NiceHash, DHCP, bitcoind
-[ -z "${FEATURE}" ] && FEEDS_CONF_URL=https://raw.github.com/Canaan-Creative/cgminer-openwrt-packages/master/cgminer/data/feeds.${AVA_MACHINE}.conf
+[ "${FEATURE}" == "None"] && FEEDS_CONF_URL=https://raw.github.com/Canaan-Creative/cgminer-openwrt-packages/master/cgminer/data/feeds.${AVA_MACHINE}.conf
 [ "${FEATURE}" == "NiceHash" ] && FEEDS_CONF_URL=https://raw.github.com/Canaan-Creative/cgminer-openwrt-packages/xnsub/cgminer/data/feeds.${AVA_MACHINE}.conf
 [ "${FEATURE}" == "DHCP" ] && FEEDS_CONF_URL=https://raw.github.com/Canaan-Creative/cgminer-openwrt-packages/dhcp/cgminer/data/feeds.${AVA_MACHINE}.conf
 [ "${FEATURE}" == "bitcoind" ] && FEEDS_CONF_URL=https://raw.github.com/Canaan-Creative/cgminer-openwrt-packages/bitcoind/cgminer/data/feeds.${AVA_MACHINE}.conf
@@ -67,6 +73,7 @@ unset GREP_OPTIONS
 # Adjust CORE_NUM by yourself
 [ -z "${CORE_NUM}" ] && CORE_NUM="$(expr $(nproc) + 1)"
 DATE=`date +%Y%m%d`
+TIME=`date "+%Y-%m-%d %H:%M:%S"`
 SCRIPT_FILE="$(readlink -f $0)"
 SCRIPT_DIR=`dirname ${SCRIPT_FILE}`
 ROOT_DIR=${SCRIPT_DIR}/avalon
@@ -158,24 +165,23 @@ prepare_feeds() {
     cp ../../config.avalon8.h3 feeds/cgminer/cgminer/data
     cp ../../config.avalon8.rpi3 feeds/cgminer/cgminer/data
 
-    if [ "${AVA_POOL}" == "other" ]; then
-        cp ../../cgminer.${AVA_MACHINE}.config feeds/cgminer/cgminer/files/cgminer.${AVA_MACHINE}.config
-    else
-        cp ../../cgminer.${AVA_MACHINE}.default feeds/cgminer/cgminer/files/cgminer.${AVA_MACHINE}.config
-    fi
+    cp ../../cgminer.${AVA_MACHINE}.${AVA_POOL} feeds/cgminer/cgminer/files/cgminer.${AVA_MACHINE}.config
 
     if [ "${AVA_TARGET_BOARD}" == "h2plus" ]; then
-        cp ../../network.dual feeds/cgminer/cgminer/root-files/etc/config/network
-        cp ../../dhcp.dual feeds/cgminer/cgminer/root-files/etc/config/dhcp
+        cp ../../network.dual.${AVA_NETWORK} feeds/cgminer/cgminer/root-files/etc/config/network
+        cp ../../dhcp.dual.${AVA_NETWORK} feeds/cgminer/cgminer/root-files/etc/config/dhcp
     else
-        cp ../../network.single feeds/cgminer/cgminer/root-files/etc/config/network
-        cp ../../dhcp.single feeds/cgminer/cgminer/root-files/etc/config/dhcp
-    fi 
-    alias cp='cp -i'
+        cp ../../network.single.${AVA_NETWORK} feeds/cgminer/cgminer/root-files/etc/config/network
+        cp ../../dhcp.single.${AVA_NETWORK} feeds/cgminer/cgminer/root-files/etc/config/dhcp
+    fi
 }
 
 prepare_source() {
-    echo "Gen firmware for ${AVA_TARGET_BOARD}:${AVA_MACHINE}"
+    echo "Gen firmware for ...... [DEBUG:$DEBUG FATURE:$FEATURE] ${TIME}"
+    echo "TARGET BOARD   :${AVA_TARGET_BOARD}"
+    echo "TARGET MACHINE :${AVA_MACHINE}"
+    echo "NETWORK        :${AVA_NETWORK}"
+    echo "POOL           :${AVA_POOL}"
     cd ${SCRIPT_DIR}
     [ ! -d avalon ] && mkdir -p avalon/bin
     cd avalon
@@ -243,8 +249,14 @@ build_cgminer() {
 do_release() {
     cd ${ROOT_DIR}
     eval AVA_TARGET_PLATFORM=\${"`echo ${AVA_TARGET_BOARD//-/_}`"_brdcfg[0]}
-    mkdir -p ./bin/${DATE}/${AVA_TARGET_BOARD}/
-    cp -a ./openwrt/bin/targets/${AVA_TARGET_PLATFORM}/* ./bin/${DATE}/${AVA_TARGET_BOARD}/
+    mkdir -p ./bin/${DATE}/${AVA_MACHINE}.${AVA_TARGET_BOARD}/
+    cat > ./bin/${DATE}/${AVA_MACHINE}.${AVA_TARGET_BOARD}/note.info << EOL 
+FEATURE  :${FEATURE}
+POOL     :${AVA_POOL}
+NETWROK  :${AVA_NETWORK}
+CREATE   :${TIME}   
+EOL
+    cp -a ./openwrt/bin/targets/${AVA_TARGET_PLATFORM}/* ./bin/${DATE}/${AVA_MACHINE}.${AVA_TARGET_BOARD}/
 }
 
 cleanup() {
@@ -272,6 +284,8 @@ Usage: $0 [--version] [--help] [--build] [--cgminer] [--cleanup]
                         use h3 if unset
      AVA_POOL           Environment variable, available pool:
                         default, other
+     AVA_NETWORK	Environment variable, available pool:
+                        default, other
                         use default if unset, Set other use cgminer.config
      AVA_MACHINE        Environment variable, available machine:
                         avalon8, avalon7, avalon6, avalon4
@@ -281,12 +295,13 @@ Usage: $0 [--version] [--help] [--build] [--cgminer] [--cleanup]
                         use blank if unset
      DEBUG              Environment variable, available feature:
                         yes, no, message 
-                        use off if unset
+                        use no if unset
 
 Written by: Xiangfu <xiangfu@openmobilefree.net>
             Fengling <Fengling.Qin@gmail.com>
             Yangjun <yangjun@canaan-creative.com>
             xuzhenxing <xuzhenxing@canaan-creative.com>
+            chengping <13641793410@163.com>
                                                      Version: ${SCRIPT_VERSION}"
  }
 
@@ -319,3 +334,4 @@ do
 done
 
 # vim: set ts=4 sw=4 et
+
