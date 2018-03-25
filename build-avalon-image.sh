@@ -73,7 +73,7 @@ unset GREP_OPTIONS
 # Adjust CORE_NUM by yourself
 [ -z "${CORE_NUM}" ] && CORE_NUM="$(expr $(nproc) + 1)"
 DATE=`date +%Y%m%d`
-TIME=`date "+%Y-%m-%d %H:%M:%S"`
+START_TIME=`date "+%Y-%m-%d %H:%M:%S"`
 SCRIPT_FILE="$(readlink -f $0)"
 SCRIPT_DIR=`dirname ${SCRIPT_FILE}`
 ROOT_DIR=${SCRIPT_DIR}/avalon
@@ -177,7 +177,7 @@ prepare_feeds() {
 }
 
 prepare_source() {
-    echo "Gen firmware for ...... [DEBUG:$DEBUG FATURE:$FEATURE] ${TIME}"
+    echo "Gen firmware for ...... [DEBUG:$DEBUG FATURE:$FEATURE] ${START_TIME}"
     echo "TARGET BOARD   :${AVA_TARGET_BOARD}"
     echo "TARGET MACHINE :${AVA_MACHINE}"
     echo "NETWORK        :${AVA_NETWORK}"
@@ -250,13 +250,16 @@ do_release() {
     cd ${ROOT_DIR}
     eval AVA_TARGET_PLATFORM=\${"`echo ${AVA_TARGET_BOARD//-/_}`"_brdcfg[0]}
     mkdir -p ./bin/${DATE}/${AVA_MACHINE}.${AVA_TARGET_BOARD}/
-    cat > ./bin/${DATE}/${AVA_MACHINE}.${AVA_TARGET_BOARD}/note.info << EOL 
+    cp -a ./openwrt/bin/targets/${AVA_TARGET_PLATFORM}/* ./bin/${DATE}/${AVA_MACHINE}.${AVA_TARGET_BOARD}/
+    # write image info
+    END_TIME=`date "+%Y-%m-%d %H:%M:%S"`
+    cat > ./bin/${DATE}/${AVA_MACHINE}.${AVA_TARGET_BOARD}/image.info << EOL 
 FEATURE  :${FEATURE}
 POOL     :${AVA_POOL}
 NETWROK  :${AVA_NETWORK}
-CREATE   :${TIME}   
+START    :${START_TIME}
+END      :${END_TIME}
 EOL
-    cp -a ./openwrt/bin/targets/${AVA_TARGET_PLATFORM}/* ./bin/${DATE}/${AVA_MACHINE}.${AVA_TARGET_BOARD}/
 }
 
 cleanup() {
@@ -298,9 +301,9 @@ Usage: $0 [--version] [--help] [--build] [--cgminer] [--cleanup]
                         use no if unset
 Example:
      for avalon7 
-     AVA_TARGET_BOARD=h3 AVA_POOL=default AVA_NETWORK=default AVA_MACHINE=avalon7 FEATURE=NiceHash DEBUG=message ./build-avalon-image.sh --build
+     AVA_TARGET_BOARD=h3 AVA_POOL=other AVA_NETWORK=other AVA_MACHINE=avalon7 FEATURE=NiceHash DEBUG=message ./build-avalon-image.sh --build
      for avalon8
-     AVA_TARGET_BOARD=h3 AVA_POOL=other AVA_NETWORK=other AVA_MACHINE=avalon8 FEATURE=none DEBUG=no ./build-avalon-image.sh --build
+     AVA_TARGET_BOARD=h3 AVA_POOL=default AVA_NETWORK=default AVA_MACHINE=avalon8 FEATURE=none DEBUG=no ./build-avalon-image.sh --build
 
 Written by: Xiangfu <xiangfu@openmobilefree.net>
             Fengling <Fengling.Qin@gmail.com>
