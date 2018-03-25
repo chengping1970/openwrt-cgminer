@@ -177,7 +177,7 @@ prepare_feeds() {
 }
 
 prepare_source() {
-    echo "Gen firmware for ...... [DEBUG:$DEBUG FATURE:$FEATURE] ${START_TIME}"
+    echo "Gen firmware for ...... [DEBUG:$DEBUG FATURE:$FEATURE] GCC-7.3.0"
     echo "TARGET BOARD   :${AVA_TARGET_BOARD}"
     echo "TARGET MACHINE :${AVA_MACHINE}"
     echo "NETWORK        :${AVA_NETWORK}"
@@ -254,6 +254,7 @@ do_release() {
     # write image info
     END_TIME=`date "+%Y-%m-%d %H:%M:%S"`
     cat > ./bin/${DATE}/${AVA_MACHINE}.${AVA_TARGET_BOARD}/image.info << EOL 
+GCC-VER  :7.3.0
 FEATURE  :${FEATURE}
 POOL     :${AVA_POOL}
 NETWROK  :${AVA_NETWORK}
