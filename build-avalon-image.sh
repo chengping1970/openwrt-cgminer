@@ -224,7 +224,9 @@ build_image() {
     # clean before build
     make clean
     
-    if [ "${DEBUG}" == "yes" ]; then
+    if [ "${DEBUG}" == "log" ]; then
+        make -j1 V=s > log.txt 2>&1
+    elif [ "${DEBUG}" == "yes" ]; then
         make -j1 V=s
     elif [ "${DEBUG}" == "message" ]; then
         make -j${CORE_NUM} V=s
@@ -298,7 +300,7 @@ Usage: $0 [--version] [--help] [--build] [--cgminer] [--cleanup]
                         none, NiceHash, DHCP, bitcoind
                         use none if unset
      DEBUG              Environment variable, available feature:
-                        yes, no, message 
+                        yes, no, message, log 
                         use no if unset
 Example:
      for avalon7 
