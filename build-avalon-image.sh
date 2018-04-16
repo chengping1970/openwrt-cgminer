@@ -212,7 +212,7 @@ prepare_source() {
                 ;;
         esac
     fi
-    [ ! -e dl ] && mkdir dl
+    [ ! -e dl ] && ln -s ../../download dl
     cd ${OPENWRT_DIR}
     ln -sf ../dl
 }

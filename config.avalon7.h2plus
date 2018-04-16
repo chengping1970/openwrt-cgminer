@@ -4,12 +4,7 @@
 #
 CONFIG_TARGET_sunxi=y
 CONFIG_TARGET_sunxi_cortexa7=y
-CONFIG_TARGET_sunxi_cortexa7_DEVICE_sun8i-h2-plus-orangepi-r1=y
-
-#
-# Rootfs
-#
-CONFIG_TARGET_ROOTFS_TARGZ=y
+CONFIG_TARGET_sunxi_cortexa7_DEVICE_sun8i-h2-plus-vidtoo-model-B=y
 
 #
 # Image Options
