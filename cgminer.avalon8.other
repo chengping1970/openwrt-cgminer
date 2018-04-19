@@ -14,6 +14,6 @@ config cgminer 'default'
 	option pool3url 'stratum+tcp://stratum.f2pool.com:3333'
 	option pool3user 'chengping.001'
 	option voltage_offset '1'
-	option chip_frequency '0:0:0:650"
+	option chip_frequency '0:0:0:650'
 
 
