@@ -40,7 +40,7 @@ start() {
 
 	config_get _vo default voltage_level_offset
 	config_get _fan default fan
-	config_get _cf chip_frequency
+	config_get _cf default chip_frequency
 
 	config_get _aa default api_allow
 	config_get _mo default more_options
