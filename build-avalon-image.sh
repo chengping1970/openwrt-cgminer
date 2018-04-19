@@ -166,6 +166,7 @@ prepare_feeds() {
     cp ../../config.avalon8.rpi3 feeds/cgminer/cgminer/data
 
     cp ../../cgminer.${AVA_MACHINE}.${AVA_POOL} feeds/cgminer/cgminer/files/cgminer.${AVA_MACHINE}.config
+    cp ../../avalon8.init.${AVA_POOL} feeds/cgminer/cgminer/files/cgminer.avalon8.init
 
     if [ "${AVA_TARGET_BOARD}" == "h2plus" ]; then
         cp ../../network.dual.${AVA_NETWORK} feeds/cgminer/cgminer/root-files/etc/config/network
