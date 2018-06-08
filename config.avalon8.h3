@@ -16,6 +16,7 @@ CONFIG_TARGET_ROOTFS_PARTSIZE=48
 # Kernel
 #
 CONFIG_PACKAGE_kmod-lib-crc-ccitt=y
+CONFIG_PACKAGE_kmod-gpio-button-hotplug=y
 
 #
 # Busybox
