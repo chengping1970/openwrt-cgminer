@@ -27,7 +27,7 @@ SCRIPT_VERSION=20180324
 
 # OpenWrt repo
 avalon4_owrepo="svn://svn.openwrt.org/openwrt/trunk@43076"
-avalon6_owrepo="git://git.openwrt.org/openwrt.git@cac971da"
+avalon6_owrepo="git://github.com/chengping1970/openwrt.git"
 abc_owrepo="git://git.openwrt.org/openwrt.git"
 avalon7_owrepo="git://github.com/chengping1970/openwrt.git"
 avalon8_owrepo="git://github.com/chengping1970/openwrt.git"
@@ -148,9 +148,15 @@ prepare_patch() {
 
 prepare_feeds() {
     cd ${OPENWRT_DIR}
-    $DL_PROG ${FEEDS_CONF_URL} $DL_PARA feeds.conf && \
-    ./scripts/feeds update -a && \
-    ./scripts/feeds install -a
+    if [ "${AVA_MACHINE}" == "avalon6" ]; then
+        cp ../../feeds.conf.avalon6 feeds.conf && \
+        ./scripts/feeds update -a && \
+        ./scripts/feeds install -a
+    else
+        $DL_PROG ${FEEDS_CONF_URL} $DL_PARA feeds.conf && \
+        ./scripts/feeds update -a && \
+        ./scripts/feeds install -a
+    fi
 
     if [ ! -e files ]; then
         ln -s feeds/cgminer/cgminer/root-files files
@@ -158,6 +164,7 @@ prepare_feeds() {
     
     alias cp='cp -i'
     unalias cp
+    cp ../../config.avalon6.h3 feeds/cgminer/cgminer/data
     cp ../../config.avalon7.h2plus feeds/cgminer/cgminer/data
     cp ../../config.avalon7.h3 feeds/cgminer/cgminer/data
     cp ../../config.avalon7.rpi3 feeds/cgminer/cgminer/data
