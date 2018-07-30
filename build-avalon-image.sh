@@ -299,7 +299,7 @@ Usage: $0 [--version] [--help] [--build] [--cgminer] [--cleanup]
      AVA_POOL           Environment variable, available pool:
                         default, other
      AVA_NETWORK	Environment variable, available pool:
-                        default, other
+                        default, other, wifi
                         use default if unset, Set other use cgminer.config
      AVA_MACHINE        Environment variable, available machine:
                         avalon8, avalon7, avalon6, avalon4
