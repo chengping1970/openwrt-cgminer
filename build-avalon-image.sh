@@ -31,6 +31,7 @@ avalon6_owrepo="git://github.com/chengping1970/openwrt.git"
 abc_owrepo="git://git.openwrt.org/openwrt.git"
 avalon7_owrepo="git://github.com/chengping1970/openwrt.git"
 avalon8_owrepo="git://github.com/chengping1970/openwrt.git"
+avalon9_owrepo="git://github.com/chengping1970/openwrt.git"
 
 # DEFINE pool
 [ -z "${AVA_POOL}" ] && AVA_POOL=default
@@ -85,6 +86,8 @@ prepare_version() {
         GIT_VERSION=`git ls-remote https://github.com/Canaan-Creative/cgminer master | cut -f1 | cut -c1-7`
     elif [ "${AVA_MACHINE}" == "avalon8" ]; then
         GIT_VERSION=`git ls-remote https://github.com/Canaan-Creative/cgminer avalon8 | cut -f1 | cut -c1-7`
+    elif [ "${AVA_MACHINE}" == "avalon9" ]; then
+        GIT_VERSION=`git ls-remote https://github.com/Canaan-Creative/cgminer avalon9 | cut -f1 | cut -c1-7`
     else
         GIT_VERSION=`git ls-remote https://github.com/Canaan-Creative/cgminer avalon4 | cut -f1 | cut -c1-7`
     fi
@@ -171,9 +174,9 @@ prepare_feeds() {
     cp ../../config.avalon8.h2plus feeds/cgminer/cgminer/data
     cp ../../config.avalon8.h3 feeds/cgminer/cgminer/data
     cp ../../config.avalon8.rpi3 feeds/cgminer/cgminer/data
-
-    cp ../../cgminer.${AVA_MACHINE}.${AVA_POOL} feeds/cgminer/cgminer/files/cgminer.${AVA_MACHINE}.config
-    cp ../../avalon8.init.${AVA_POOL} feeds/cgminer/cgminer/files/cgminer.avalon8.init
+    cp ../../config.avalon9.h2plus feeds/cgminer/cgminer/data
+    cp ../../config.avalon9.h3 feeds/cgminer/cgminer/data
+    cp ../../config.avalon9.rpi3 feeds/cgminer/cgminer/data
 
     if [ "${AVA_TARGET_BOARD}" == "h2plus" ]; then
         cp ../../network.dual.${AVA_NETWORK} feeds/cgminer/cgminer/root-files/etc/config/network
@@ -298,11 +301,11 @@ Usage: $0 [--version] [--help] [--build] [--cgminer] [--cleanup]
                         use h3 if unset
      AVA_POOL           Environment variable, available pool:
                         default, other
-     AVA_NETWORK	Environment variable, available pool:
+     AVA_NETWORK	    Environment variable, available network:
                         default, other, wifi
                         use default if unset, Set other use cgminer.config
      AVA_MACHINE        Environment variable, available machine:
-                        avalon8, avalon7, avalon6, avalon4
+                        avalon9, avalon8, avalon7, avalon6, avalon4
                         use avalon8 if unset
      FEATURE            Environment variable, available feature:
                         none, NiceHash, DHCP, bitcoind
@@ -312,9 +315,11 @@ Usage: $0 [--version] [--help] [--build] [--cgminer] [--cleanup]
                         use no if unset
 Example:
      for avalon7 
-     AVA_TARGET_BOARD=h3 AVA_POOL=other AVA_NETWORK=other AVA_MACHINE=avalon7 FEATURE=NiceHash DEBUG=message ./build-avalon-image.sh --build
+     AVA_TARGET_BOARD=h3 AVA_POOL=default AVA_NETWORK=other AVA_MACHINE=avalon7 FEATURE=NiceHash DEBUG=message ./build-avalon-image.sh --build
      for avalon8
      AVA_TARGET_BOARD=h3 AVA_POOL=default AVA_NETWORK=default AVA_MACHINE=avalon8 FEATURE=none DEBUG=no ./build-avalon-image.sh --build
+     for avalon9
+     AVA_TARGET_BOARD=h3 AVA_POOL=default AVA_NETWORK=default AVA_MACHINE=avalon9 FEATURE=none DEBUG=no ./build-avalon-image.sh --build
 
 Written by: Xiangfu <xiangfu@openmobilefree.net>
             Fengling <Fengling.Qin@gmail.com>
