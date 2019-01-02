@@ -14,12 +14,12 @@
 # Learn bash: http://explainshell.com/
 set -e
 
-SCRIPT_VERSION=20180324
+SCRIPT_VERSION=20190102
 
 # Support machine: avalon6, avalon4, abc, avalon7, avalon8
-[ -z "${AVA_MACHINE}" ] && AVA_MACHINE=avalon8
+[ -z "${AVA_MACHINE}" ] && AVA_MACHINE=avalon9
 
-# Support target board: rpi3-modelb, rpi2-modelb, rpi1-modelb, tl-wr703n-v1, tl-mr3020-v1, wrt1200ac, zedboard, h2plus, zctrl, xc7z100
+# Support target board: rpi3-modelb, rpi2-modelb, rpi1-modelb, tl-wr703n-v1, tl-mr3020-v1, wrt1200ac, zedboard, h3, zctrl, xc7z100
 [ -z "${AVA_TARGET_BOARD}" ] && AVA_TARGET_BOARD=h3
 
 # Patch repo
@@ -27,13 +27,14 @@ SCRIPT_VERSION=20180324
 
 # OpenWrt repo
 avalon4_owrepo="svn://svn.openwrt.org/openwrt/trunk@43076"
-avalon6_owrepo="git://git.openwrt.org/openwrt.git@cac971da"
+avalon6_owrepo="git://github.com/chengping1970/openwrt.git"
 abc_owrepo="git://git.openwrt.org/openwrt.git"
 avalon7_owrepo="git://github.com/chengping1970/openwrt.git"
 avalon8_owrepo="git://github.com/chengping1970/openwrt.git"
+avalon9_owrepo="git://github.com/chengping1970/openwrt.git"
 
-# DEFINE pool
-[ -z "${AVA_POOL}" ] && AVA_POOL=default
+# DEFINE enable A920
+[ -z "${ENABLE_A920}" ] && ENABLE_A920=disable
 
 #defiine network 
 [ -z "${AVA_NETWORK}" ] && AVA_NETWORK=default
@@ -60,7 +61,6 @@ wrt1200ac_brdcfg=("mvebu" "config.${AVA_MACHINE}.wrt1200ac")
 zedboard_brdcfg=("zynq" "config.${AVA_MACHINE}.zedboard")
 zctrl_brdcfg=("zynq" "config.${AVA_MACHINE}.zctrl")
 xc7z100_brdcfg=("zynq" "config.7z100")
-h2plus_brdcfg=("sunxi/cortexa7" "config.${AVA_MACHINE}.h2plus")
 h3_brdcfg=("sunxi/cortexa7" "config.${AVA_MACHINE}.h3")
 
 which wget > /dev/null && DL_PROG=wget && DL_PARA="-nv -O"
@@ -85,6 +85,18 @@ prepare_version() {
         GIT_VERSION=`git ls-remote https://github.com/Canaan-Creative/cgminer master | cut -f1 | cut -c1-7`
     elif [ "${AVA_MACHINE}" == "avalon8" ]; then
         GIT_VERSION=`git ls-remote https://github.com/Canaan-Creative/cgminer avalon8 | cut -f1 | cut -c1-7`
+    elif [ "${AVA_MACHINE}" == "avalon8_lp" ]; then
+        GIT_VERSION=`git ls-remote https://github.com/Canaan-Creative/cgminer avalon8_lp | cut -f1 | cut -c1-7`
+    elif [ "${AVA_MACHINE}" == "avalon9" ]; then
+        if [ "${ENABLE_A920}" == "disable" ]; then
+            GIT_VERSION=`git ls-remote https://github.com/Canaan-Creative/cgminer avalon9 | cut -f1 | cut -c1-7`
+        else
+            GIT_VERSION=`git ls-remote https://github.com/Canaan-Creative/cgminer avalon9-dev | cut -f1 | cut -c1-7`
+        fi
+    elif [ "${AVA_MACHINE}" == "avalon911" ]; then
+        GIT_VERSION=`git ls-remote https://github.com/Canaan-Creative/cgminer avalon911 | cut -f1 | cut -c1-7`
+    elif [ "${AVA_MACHINE}" == "avalonlc3" ]; then
+        GIT_VERSION=`git ls-remote https://github.com/Canaan-Creative/cgminer avalonlc3 | cut -f1 | cut -c1-7`
     else
         GIT_VERSION=`git ls-remote https://github.com/Canaan-Creative/cgminer avalon4 | cut -f1 | cut -c1-7`
     fi
@@ -148,9 +160,15 @@ prepare_patch() {
 
 prepare_feeds() {
     cd ${OPENWRT_DIR}
-    $DL_PROG ${FEEDS_CONF_URL} $DL_PARA feeds.conf && \
-    ./scripts/feeds update -a && \
-    ./scripts/feeds install -a
+    if [ "${AVA_MACHINE}" == "avalon6" ]; then
+        cp ../../feeds.conf.avalon6 feeds.conf && \
+        ./scripts/feeds update -a && \
+        ./scripts/feeds install -a
+    else
+        $DL_PROG ${FEEDS_CONF_URL} $DL_PARA feeds.conf && \
+        ./scripts/feeds update -a && \
+        ./scripts/feeds install -a
+    fi
 
     if [ ! -e files ]; then
         ln -s feeds/cgminer/cgminer/root-files files
@@ -158,21 +176,19 @@ prepare_feeds() {
     
     alias cp='cp -i'
     unalias cp
-    cp ../../config.avalon7.h2plus feeds/cgminer/cgminer/data
+    cp ../../config.avalon6.h3 feeds/cgminer/cgminer/data
     cp ../../config.avalon7.h3 feeds/cgminer/cgminer/data
-    cp ../../config.avalon7.rpi3 feeds/cgminer/cgminer/data
-    cp ../../config.avalon8.h2plus feeds/cgminer/cgminer/data
     cp ../../config.avalon8.h3 feeds/cgminer/cgminer/data
-    cp ../../config.avalon8.rpi3 feeds/cgminer/cgminer/data
-
-    cp ../../cgminer.${AVA_MACHINE}.${AVA_POOL} feeds/cgminer/cgminer/files/cgminer.${AVA_MACHINE}.config
-
-    if [ "${AVA_TARGET_BOARD}" == "h2plus" ]; then
-        cp ../../network.dual.${AVA_NETWORK} feeds/cgminer/cgminer/root-files/etc/config/network
-        cp ../../dhcp.dual.${AVA_NETWORK} feeds/cgminer/cgminer/root-files/etc/config/dhcp
+    cp ../../config.avalon8_lp.h3 feeds/cgminer/cgminer/data
+    cp ../../config.avalon9.h3 feeds/cgminer/cgminer/data
+    cp ../../config.avalon911.h3 feeds/cgminer/cgminer/data
+    cp ../../config.avalonlc3.h3 feeds/cgminer/cgminer/data
+    cp ../../network.single.${AVA_NETWORK} feeds/cgminer/cgminer/root-files/etc/config/network
+    cp ../../dhcp.single.${AVA_NETWORK} feeds/cgminer/cgminer/root-files/etc/config/dhcp
+    if [ "${AVA_MACHINE}" == "avalon9" ] && [ "${ENABLE_A920}" == "enable" ]; then
+        cp ../../Makefile.avalon920 feeds/cgminer/cgminer/Makefile
     else
-        cp ../../network.single.${AVA_NETWORK} feeds/cgminer/cgminer/root-files/etc/config/network
-        cp ../../dhcp.single.${AVA_NETWORK} feeds/cgminer/cgminer/root-files/etc/config/dhcp
+        cp ../../Makefile feeds/cgminer/cgminer/Makefile
     fi
 }
 
@@ -180,8 +196,8 @@ prepare_source() {
     echo "Gen firmware for ...... [DEBUG:$DEBUG FATURE:$FEATURE] GCC-5.5.0"
     echo "TARGET BOARD   :${AVA_TARGET_BOARD}"
     echo "TARGET MACHINE :${AVA_MACHINE}"
+    echo "ENABLE_A920    :${ENABLE_A920}"
     echo "NETWORK        :${AVA_NETWORK}"
-    echo "POOL           :${AVA_POOL}"
     cd ${SCRIPT_DIR}
     [ ! -d avalon ] && mkdir -p avalon/bin
     cd avalon
@@ -212,7 +228,7 @@ prepare_source() {
                 ;;
         esac
     fi
-    [ ! -e dl ] && mkdir dl
+    [ ! -e dl ] && ln -s ../../download dl
     cd ${OPENWRT_DIR}
     ln -sf ../dl
 }
@@ -251,11 +267,21 @@ build_cgminer() {
 do_release() {
     cd ${ROOT_DIR}
     eval AVA_TARGET_PLATFORM=\${"`echo ${AVA_TARGET_BOARD//-/_}`"_brdcfg[0]}
-    mkdir -p ./bin/${DATE}/${AVA_MACHINE}.${AVA_TARGET_BOARD}/
-    cp -a ./openwrt/bin/targets/${AVA_TARGET_PLATFORM}/* ./bin/${DATE}/${AVA_MACHINE}.${AVA_TARGET_BOARD}/
+    if [ "${AVA_MACHINE}" == "avalon9" ] && [ "${ENABLE_A920}" == "enable" ]; then
+        mkdir -p ./bin/${DATE}/${AVA_MACHINE}20.${AVA_TARGET_BOARD}/
+        cp -a ./openwrt/bin/targets/${AVA_TARGET_PLATFORM}/* ./bin/${DATE}/${AVA_MACHINE}20.${AVA_TARGET_BOARD}/
+    else
+        mkdir -p ./bin/${DATE}/${AVA_MACHINE}.${AVA_TARGET_BOARD}/
+        cp -a ./openwrt/bin/targets/${AVA_TARGET_PLATFORM}/* ./bin/${DATE}/${AVA_MACHINE}.${AVA_TARGET_BOARD}/
+    fi
     # write image info
     END_TIME=`date "+%Y-%m-%d %H:%M:%S"`
-    cat > ./bin/${DATE}/${AVA_MACHINE}.${AVA_TARGET_BOARD}/image.info << EOL 
+    if [ "${AVA_MACHINE}" == "avalon9" ] && [ "${ENABLE_A920}" == "enable" ]; then
+        cd ./bin/${DATE}/${AVA_MACHINE}20.${AVA_TARGET_BOARD}
+    else
+        cd ./bin/${DATE}/${AVA_MACHINE}.${AVA_TARGET_BOARD}
+    fi
+    cat > ./image.info << EOL
 GCC-VER  :5.5.0
 FEATURE  :${FEATURE}
 POOL     :${AVA_POOL}
@@ -286,16 +312,17 @@ Usage: $0 [--version] [--help] [--build] [--cgminer] [--cleanup]
      AVA_TARGET_BOARD   Environment variable, available target:
                         rpi3-modelb, rpi2-modelb
                         rpi1-modelb, tl-mr3020-v1
-                        zctrl, xc7z100, h2plus, h3
+                        zctrl, xc7z100, h3
                         use h3 if unset
-     AVA_POOL           Environment variable, available pool:
-                        default, other
-     AVA_NETWORK	Environment variable, available pool:
-                        default, other
-                        use default if unset, Set other use cgminer.config
+     AVA_NETWORK	    Environment variable, available network:
+                        default, other, wifi
+                        use default if unset
      AVA_MACHINE        Environment variable, available machine:
-                        avalon8, avalon7, avalon6, avalon4
-                        use avalon8 if unset
+                        avalonlc3, avalon9, avalon911, avalon8, avalon8_lp, avalon7, avalon6, avalon4
+                        use avalon9 if unset
+     ENABLE_A920        Environment variable, available A920:
+                        diasble, enable
+                        use disable if unset
      FEATURE            Environment variable, available feature:
                         none, NiceHash, DHCP, bitcoind
                         use none if unset
@@ -303,10 +330,12 @@ Usage: $0 [--version] [--help] [--build] [--cgminer] [--cleanup]
                         yes, no, message, log 
                         use no if unset
 Example:
-     for avalon7 
-     AVA_TARGET_BOARD=h3 AVA_POOL=other AVA_NETWORK=other AVA_MACHINE=avalon7 FEATURE=NiceHash DEBUG=message ./build-avalon-image.sh --build
+     for avalon7 ,default IP 192.168.7.234
+     AVA_TARGET_BOARD=h3 AVA_NETWORK=other AVA_MACHINE=avalon7 FEATURE=NiceHash DEBUG=message ./build-avalon-image.sh --build
      for avalon8
-     AVA_TARGET_BOARD=h3 AVA_POOL=default AVA_NETWORK=default AVA_MACHINE=avalon8 FEATURE=none DEBUG=no ./build-avalon-image.sh --build
+     AVA_TARGET_BOARD=h3 AVA_NETWORK=default AVA_MACHINE=avalon8 FEATURE=none DEBUG=no ./build-avalon-image.sh --build
+     for avalon9
+     AVA_TARGET_BOARD=h3 AVA_NETWORK=default AVA_MACHINE=avalon9 ENABLE_A920=disable FEATURE=none DEBUG=no ./build-avalon-image.sh --build
 
 Written by: Xiangfu <xiangfu@openmobilefree.net>
             Fengling <Fengling.Qin@gmail.com>
