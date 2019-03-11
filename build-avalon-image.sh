@@ -36,6 +36,9 @@ avalon9_owrepo="git://github.com/chengping1970/openwrt.git"
 # DEFINE enable A920
 [ -z "${ENABLE_A920}" ] && ENABLE_A920=disable
 
+# DEFINE enable A851_13T
+[ -z "${ENABLE_A851_13T}" ] && ENABLE_A851_13T=disable
+
 #defiine network 
 [ -z "${AVA_NETWORK}" ] && AVA_NETWORK=default
 
@@ -84,7 +87,11 @@ prepare_version() {
     if [ "${AVA_MACHINE}" == "avalon7" ]; then
         GIT_VERSION=`git ls-remote https://github.com/Canaan-Creative/cgminer master | cut -f1 | cut -c1-7`
     elif [ "${AVA_MACHINE}" == "avalon8" ]; then
-        GIT_VERSION=`git ls-remote https://github.com/Canaan-Creative/cgminer avalon8 | cut -f1 | cut -c1-7`
+        if [ "${ENABLE_A851_13T}" == "disable" ]; then
+            GIT_VERSION=`git ls-remote https://github.com/Canaan-Creative/cgminer avalon8 | cut -f1 | cut -c1-7`
+        else
+            GIT_VERSION=`git ls-remote https://github.com/hbhdwxc/cgminer avalon851_13T | cut -f1 | cut -c1-7`
+        fi
     elif [ "${AVA_MACHINE}" == "avalon8_lp" ]; then
         GIT_VERSION=`git ls-remote https://github.com/Canaan-Creative/cgminer avalon8_lp | cut -f1 | cut -c1-7`
     elif [ "${AVA_MACHINE}" == "avalon9" ]; then
@@ -183,6 +190,8 @@ prepare_feeds() {
     cp ../../dhcp.single.${AVA_NETWORK} feeds/cgminer/cgminer/root-files/etc/config/dhcp
     if [ "${AVA_MACHINE}" == "avalon9" ] && [ "${ENABLE_A920}" == "enable" ]; then
         cp ../../Makefile.avalon920 feeds/cgminer/cgminer/Makefile
+    elif [ "${AVA_MACHINE}" == "avalon8" ] && [ "${ENABLE_A851_13T}" == "enable" ]; then
+        cp ../../Makefile.avalon920 feeds/cgminer/cgminer/Makefile
     else
         cp ../../Makefile feeds/cgminer/cgminer/Makefile
     fi
@@ -193,6 +202,7 @@ prepare_source() {
     echo "TARGET BOARD   :${AVA_TARGET_BOARD}"
     echo "TARGET MACHINE :${AVA_MACHINE}"
     echo "ENABLE_A920    :${ENABLE_A920}"
+    echo "ENABLE_A851_13T:${ENABLE_A851_13T}"
     echo "NETWORK        :${AVA_NETWORK}"
     cd ${SCRIPT_DIR}
     [ ! -d avalon ] && mkdir -p avalon/bin
@@ -266,6 +276,9 @@ do_release() {
     if [ "${AVA_MACHINE}" == "avalon9" ] && [ "${ENABLE_A920}" == "enable" ]; then
         mkdir -p ./bin/${DATE}/${AVA_MACHINE}20.${AVA_TARGET_BOARD}/
         cp -a ./openwrt/bin/targets/${AVA_TARGET_PLATFORM}/* ./bin/${DATE}/${AVA_MACHINE}20.${AVA_TARGET_BOARD}/
+    elif [ "${AVA_MACHINE}" == "avalon8" ] && [ "${ENABLE_A851_13T}" == "enable" ]; then
+        mkdir -p ./bin/${DATE}/${AVA_MACHINE}51_13T.${AVA_TARGET_BOARD}/
+        cp -a ./openwrt/bin/targets/${AVA_TARGET_PLATFORM}/* ./bin/${DATE}/${AVA_MACHINE}51_13T.${AVA_TARGET_BOARD}/ 
     else
         mkdir -p ./bin/${DATE}/${AVA_MACHINE}.${AVA_TARGET_BOARD}/
         cp -a ./openwrt/bin/targets/${AVA_TARGET_PLATFORM}/* ./bin/${DATE}/${AVA_MACHINE}.${AVA_TARGET_BOARD}/
@@ -319,6 +332,9 @@ Usage: $0 [--version] [--help] [--build] [--cgminer] [--cleanup]
      ENABLE_A920        Environment variable, available A920:
                         diasble, enable
                         use disable if unset
+     ENABLE_A851_13T    Environment variable, available A851_13T:
+                        diasble, enable
+                        use disable if unset
      FEATURE            Environment variable, available feature:
                         none, NiceHash, DHCP, bitcoind
                         use none if unset
@@ -329,7 +345,7 @@ Example:
      for avalon7 ,default IP 192.168.7.234
      AVA_TARGET_BOARD=h3 AVA_NETWORK=other AVA_MACHINE=avalon7 FEATURE=NiceHash DEBUG=message ./build-avalon-image.sh --build
      for avalon8
-     AVA_TARGET_BOARD=h3 AVA_NETWORK=default AVA_MACHINE=avalon8 FEATURE=none DEBUG=no ./build-avalon-image.sh --build
+     AVA_TARGET_BOARD=h3 AVA_NETWORK=default AVA_MACHINE=avalon8 ENABLE_A851_13T=disable FEATURE=none DEBUG=no ./build-avalon-image.sh --build
      for avalon9
      AVA_TARGET_BOARD=h3 AVA_NETWORK=default AVA_MACHINE=avalon9 ENABLE_A920=disable FEATURE=none DEBUG=no ./build-avalon-image.sh --build
 
