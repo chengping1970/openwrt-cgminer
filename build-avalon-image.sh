@@ -327,7 +327,7 @@ Usage: $0 [--version] [--help] [--build] [--cgminer] [--cleanup]
                         default, other, wifi
                         use default if unset
      AVA_MACHINE        Environment variable, available machine:
-                        avalonlc3, avalon9, avalon911, avalon8, avalon8_lp, avalon7, avalon6, avalon4
+                        avalonlc3, avalon9, avalon911, avalon8, avalon850, avalon8_lp, avalon7, avalon6, avalon4
                         use avalon9 if unset
      ENABLE_A920        Environment variable, available A920:
                         diasble, enable
