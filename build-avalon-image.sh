@@ -92,6 +92,8 @@ prepare_version() {
         else
             GIT_VERSION=`git ls-remote https://github.com/hbhdwxc/cgminer avalon851_13T | cut -f1 | cut -c1-7`
         fi
+    elif [ "${AVA_MACHINE}" == "avalon850" ]; then
+        GIT_VERSION=`git ls-remote https://github.com/Canaan-Creative/cgminer avalon850 | cut -f1 | cut -c1-7`
     elif [ "${AVA_MACHINE}" == "avalon8_lp" ]; then
         GIT_VERSION=`git ls-remote https://github.com/Canaan-Creative/cgminer avalon8_lp | cut -f1 | cut -c1-7`
     elif [ "${AVA_MACHINE}" == "avalon9" ]; then
