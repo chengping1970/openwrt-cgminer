@@ -14,7 +14,7 @@
 # Learn bash: http://explainshell.com/
 set -e
 
-SCRIPT_VERSION=20190102
+SCRIPT_VERSION=20191020
 
 # Support machine: avalon6, avalon4, abc, avalon7, avalon8
 [ -z "${AVA_MACHINE}" ] && AVA_MACHINE=avalon9
@@ -84,8 +84,8 @@ OPENWRT_DIR=${ROOT_DIR}/openwrt
 
 prepare_version() {
     cd ${OPENWRT_DIR}
-    if [ "${AVA_MACHINE}" == "avalon7" ]; then
-        GIT_VERSION=`git ls-remote https://github.com/Canaan-Creative/cgminer master | cut -f1 | cut -c1-7`
+    if [ "${AVA_MACHINE}" == "avalon7" ] || [ "${AVA_MACHINE}" == "avalon6" ] ; then
+        GIT_VERSION=`git ls-remote https://github.com/Canaan-Creative/cgminer cgminer.xnsub | cut -f1 | cut -c1-7`
     elif [ "${AVA_MACHINE}" == "avalon8" ]; then
         if [ "${ENABLE_A851_13T}" == "disable" ]; then
             GIT_VERSION=`git ls-remote https://github.com/Canaan-Creative/cgminer avalon8 | cut -f1 | cut -c1-7`
@@ -185,6 +185,8 @@ prepare_feeds() {
     
     alias cp='cp -i'
     unalias cp
+    cp ../../config.avalon6.h3 feeds/cgminer/cgminer/data
+    cp ../../config.avalon7.h3 feeds/cgminer/cgminer/data
     cp ../../config.avalon9.h3 feeds/cgminer/cgminer/data
     cp ../../config.avalon911.h3 feeds/cgminer/cgminer/data
     cp ../../config.avalonlc3.h3 feeds/cgminer/cgminer/data
@@ -236,7 +238,8 @@ prepare_source() {
                 ;;
         esac
     fi
-    [ ! -e dl ] && ln -s ../../download dl
+    [ ! -d ~/download ] && mkdir ~/download
+    [ ! -e dl ] && ln -s ~/download dl
     cd ${OPENWRT_DIR}
     ln -sf ../dl
 }
@@ -289,6 +292,8 @@ do_release() {
     END_TIME=`date "+%Y-%m-%d %H:%M:%S"`
     if [ "${AVA_MACHINE}" == "avalon9" ] && [ "${ENABLE_A920}" == "enable" ]; then
         cd ./bin/${DATE}/${AVA_MACHINE}20.${AVA_TARGET_BOARD}
+    elif [ "${AVA_MACHINE}" == "avalon8" ] && [ "${ENABLE_A851_13T}" == "enable" ]; then
+	cd  ./bin/${DATE}/${AVA_MACHINE}51_13T.${AVA_TARGET_BOARD}/
     else
         cd ./bin/${DATE}/${AVA_MACHINE}.${AVA_TARGET_BOARD}
     fi

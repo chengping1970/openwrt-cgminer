@@ -19,12 +19,12 @@ else
 	PKG_REV:=06b44fcc2ed64a3e0d8288287d28176132433642
 endif
 ifeq ($(CONFIG_CGMINER_AVALON6),y)
-	PKG_VERSION:=git-$(shell git ls-remote https://github.com/Canaan-Creative/cgminer avalon4 | cut -f1 | cut -c1-7)
-	PKG_REV:=avalon4
+	PKG_VERSION:=git-$(shell git ls-remote https://github.com/Canaan-Creative/cgminer cgminer.xnsub | cut -f1 | cut -c1-7)
+	PKG_REV:=cgminer.xnsub
 endif
 ifeq ($(CONFIG_CGMINER_AVALON7),y)
-	PKG_VERSION:=git-$(shell git ls-remote https://github.com/Canaan-Creative/cgminer master | cut -f1 | cut -c1-7)
-	PKG_REV:=master
+	PKG_VERSION:=git-$(shell git ls-remote https://github.com/Canaan-Creative/cgminer cgminer.xnsub | cut -f1 | cut -c1-7)
+	PKG_REV:=cgminer.xnsub
 endif
 ifeq ($(CONFIG_CGMINER_AVALON8),y)
 	PKG_VERSION:=git-$(shell git ls-remote https://github.com/Canaan-Creative/cgminer avalon8 | cut -f1 | cut -c1-7)
